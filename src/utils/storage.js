@@ -246,6 +246,13 @@ export const StorageService = {
     return submissionRecord;
   },
 
+  deleteSubmission(id) {
+    let subs = this.getAllSubmissions();
+    subs = subs.filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(subs));
+    return subs;
+  },
+
   // Theme
   getTheme() {
     return localStorage.getItem(STORAGE_KEYS.THEME) || 'light';

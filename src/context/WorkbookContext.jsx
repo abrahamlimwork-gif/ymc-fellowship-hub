@@ -214,6 +214,11 @@ export function WorkbookProvider({ children }) {
     return { totalPages: wb.totalPages, percent, totalFields, answeredFields };
   }, [workbooks, userAnswers]);
 
+  const deleteSubmission = (subId) => {
+    const updated = StorageService.deleteSubmission(subId);
+    setSubmissions([...updated]);
+  };
+
   return (
     <WorkbookContext.Provider
       value={{
@@ -230,6 +235,7 @@ export function WorkbookProvider({ children }) {
         deleteQuestionnaire,
         submitTask,
         submissions,
+        deleteSubmission,
         getUserSubmissions,
         getWorkbookProgress
       }}

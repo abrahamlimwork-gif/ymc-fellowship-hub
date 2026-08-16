@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useWorkbook } from '../context/WorkbookContext';
-import { ShieldCheck, Download, Search, User, Calendar, CheckCircle2, ChevronRight, X, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Download, Search, User, Calendar, CheckCircle2, ChevronRight, X, ArrowLeft, Trash2 } from 'lucide-react';
 
 export function AdminSubmissions({ onBack }) {
-  const { submissions, questionnaires } = useWorkbook();
+  const { submissions, questionnaires, deleteSubmission } = useWorkbook();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTaskFilter, setSelectedTaskFilter] = useState('all');
   const [viewingSub, setViewingSub] = useState(null);
@@ -14,6 +14,16 @@ export function AdminSubmissions({ onBack }) {
     const matchTask = selectedTaskFilter === 'all' || s.taskId === selectedTaskFilter;
     return matchSearch && matchTask;
   });
+
+  const handleDeleteSubmission = (e, subId, memberName, taskTitle) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete submission by ${memberName} for "${taskTitle}"?`)) {
+      deleteSubmission(subId);
+      if (viewingSub?.id === subId) {
+        setViewingSub(null);
+      }
+    }
+  };
 
   const exportCSV = () => {
     if (submissions.length === 0) return alert('No submissions to export.');
@@ -123,10 +133,18 @@ export function AdminSubmissions({ onBack }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
                     {Object.keys(sub.answers || {}).length} answers
                   </span>
+                  <button
+                    className="btn-icon btn-sm"
+                    onClick={(e) => handleDeleteSubmission(e, sub.id, sub.userName, sub.taskTitle)}
+                    style={{ color: 'var(--accent-ruby)', padding: '4px' }}
+                    title="Delete Submission (Admin)"
+                  >
+                    <Trash2 size={15} />
+                  </button>
                   <ChevronRight size={18} color="var(--text-muted)" />
                 </div>
               </div>
@@ -170,7 +188,15 @@ export function AdminSubmissions({ onBack }) {
               ))}
             </div>
 
-            <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button
+                className="btn btn-outline btn-sm"
+                style={{ color: 'var(--accent-ruby)', borderColor: 'rgba(239, 68, 68, 0.4)' }}
+                onClick={(e) => handleDeleteSubmission(e, viewingSub.id, viewingSub.userName, viewingSub.taskTitle)}
+              >
+                <Trash2 size={14} /> Delete Submission
+              </button>
+
               <button className="btn btn-primary btn-sm" onClick={() => setViewingSub(null)}>
                 Close Inspector
               </button>

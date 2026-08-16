@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useWorkbook } from '../context/WorkbookContext';
 import { useAuth } from '../context/AuthContext';
-import { CheckSquare, Plus, CheckCircle2, Clock, Calendar, ArrowRight, Shield } from 'lucide-react';
+import { CheckSquare, Plus, CheckCircle2, Clock, Calendar, ArrowRight, Trash2 } from 'lucide-react';
 
 export function TaskList({ onSelectTask, onNavigate }) {
-  const { questionnaires, getUserSubmissions } = useWorkbook();
+  const { questionnaires, deleteQuestionnaire, getUserSubmissions } = useWorkbook();
   const { currentUser, isAdmin } = useAuth();
   const [filter, setFilter] = useState('all'); // 'all' | 'pending' | 'completed'
 
@@ -16,6 +16,13 @@ export function TaskList({ onSelectTask, onNavigate }) {
     if (filter === 'completed') return isSubmitted;
     return true;
   });
+
+  const handleDeleteTask = (e, taskId, title) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete questionnaire "${title}"?`)) {
+      deleteQuestionnaire(taskId);
+    }
+  };
 
   return (
     <div className="task-list-page">
@@ -84,7 +91,8 @@ export function TaskList({ onSelectTask, onNavigate }) {
                   borderLeft: isSubmitted ? '4px solid var(--accent-emerald)' : '4px solid var(--primary)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.75rem'
+                  gap: '0.75rem',
+                  position: 'relative'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
@@ -102,15 +110,28 @@ export function TaskList({ onSelectTask, onNavigate }) {
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>{task.title}</h3>
                   </div>
 
-                  {isSubmitted ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-emerald)', background: 'var(--accent-emerald-light)', padding: '3px 8px', borderRadius: 'var(--radius-full)' }}>
-                      <CheckCircle2 size={13} /> Submitted
-                    </span>
-                  ) : (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-gold)', background: 'var(--accent-gold-light)', padding: '3px 8px', borderRadius: 'var(--radius-full)' }}>
-                      <Clock size={13} /> Pending
-                    </span>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {isSubmitted ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-emerald)', background: 'var(--accent-emerald-light)', padding: '3px 8px', borderRadius: 'var(--radius-full)' }}>
+                        <CheckCircle2 size={13} /> Submitted
+                      </span>
+                    ) : (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-gold)', background: 'var(--accent-gold-light)', padding: '3px 8px', borderRadius: 'var(--radius-full)' }}>
+                        <Clock size={13} /> Pending
+                      </span>
+                    )}
+
+                    {isAdmin && (
+                      <button
+                        className="btn-icon btn-sm"
+                        onClick={(e) => handleDeleteTask(e, task.id, task.title)}
+                        style={{ color: 'var(--accent-ruby)', padding: '4px' }}
+                        title="Delete Questionnaire (Admin)"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
