@@ -7,23 +7,23 @@ import {
   getDocs,
   setDoc,
   deleteDoc,
-  onSnapshot,
-  query,
-  orderBy
+  onSnapshot
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Your Firebase Config (Can also use VITE_FIREBASE_* environment variables)
+// Official Firebase configuration for StationOS / CGC-Connect
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSy_YOUR_API_KEY",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "ymc-fellowship-hub.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "ymc-fellowship-hub",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "ymc-fellowship-hub.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1234567890",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1234567890:web:abcdef123456"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDMcEtc9Iko8Enx0R5J7RoU_SRK_mFr1xo",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "stationos.firebaseapp.com",
+  databaseURL: import.meta.env.VITE_FIREBASE_DB_URL || "https://stationos-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "stationos",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "stationos.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "851188912610",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:851188912610:web:dd78b732f7ea4303f7a9bb",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-FGEQRZ0FQE"
 };
 
-// Initialize Firebase
+// Initialize Firebase App
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -32,14 +32,8 @@ export { app, db, auth };
 
 // Cloud Firestore Sync Service
 export const FirebaseService = {
-  // Check if Firebase has valid live credentials
   isConfigured() {
-    return (
-      firebaseConfig.apiKey &&
-      !firebaseConfig.apiKey.includes('YOUR_API_KEY') &&
-      firebaseConfig.projectId &&
-      !firebaseConfig.projectId.includes('your-project')
-    );
+    return !!firebaseConfig.apiKey && !!firebaseConfig.projectId;
   },
 
   // Save / Sync User Answer to Cloud
@@ -54,7 +48,7 @@ export const FirebaseService = {
         }
       }, { merge: true });
     } catch (err) {
-      console.warn('Firebase syncAnswer notice (using local offline storage):', err.message);
+      console.warn('Firebase syncAnswer notice (fallback to local offline storage):', err.message);
     }
   },
 
