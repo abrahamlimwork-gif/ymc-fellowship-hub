@@ -253,6 +253,68 @@ export const StorageService = {
     return subs;
   },
 
+  // Dynamic Workbooks (Create & Delete)
+  getCustomWorkbooks() {
+    try {
+      const stored = localStorage.getItem('ymc_hub_custom_workbooks_v1');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  getDeletedWorkbookIds() {
+    try {
+      const stored = localStorage.getItem('ymc_hub_deleted_workbooks_v1');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  getAllWorkbooks(defaultWorkbooks) {
+    const deletedIds = this.getDeletedWorkbookIds();
+    const custom = this.getCustomWorkbooks();
+    const activeDefaults = (defaultWorkbooks || []).filter(w => !deletedIds.includes(w.id));
+    return [...activeDefaults, ...custom];
+  },
+
+  saveCustomWorkbook(wb) {
+    const list = this.getCustomWorkbooks();
+    const existingIndex = list.findIndex(w => w.id === wb.id);
+    const newWb = {
+      id: wb.id || 'wb-custom-' + Date.now(),
+      createdAt: new Date().toISOString(),
+      ...wb
+    };
+
+    if (existingIndex >= 0) {
+      list[existingIndex] = newWb;
+    } else {
+      list.push(newWb);
+    }
+
+    localStorage.setItem('ymc_hub_custom_workbooks_v1', JSON.stringify(list));
+    return newWb;
+  },
+
+  deleteWorkbook(wbId) {
+    // Check if custom
+    let custom = this.getCustomWorkbooks();
+    const isCustom = custom.some(w => w.id === wbId);
+    if (isCustom) {
+      custom = custom.filter(w => w.id !== wbId);
+      localStorage.setItem('ymc_hub_custom_workbooks_v1', JSON.stringify(custom));
+    } else {
+      // Mark default workbook as deleted
+      const deletedIds = this.getDeletedWorkbookIds();
+      if (!deletedIds.includes(wbId)) {
+        deletedIds.push(wbId);
+        localStorage.setItem('ymc_hub_deleted_workbooks_v1', JSON.stringify(deletedIds));
+      }
+    }
+  },
+
   // Theme
   getTheme() {
     return localStorage.getItem(STORAGE_KEYS.THEME) || 'light';

@@ -8,6 +8,7 @@ import { WorkbookReader } from './pages/WorkbookReader';
 import { TaskList } from './pages/TaskList';
 import { TaskFiller } from './pages/TaskFiller';
 import { AdminTaskBuilder } from './pages/AdminTaskBuilder';
+import { AdminWorkbookBuilder } from './pages/AdminWorkbookBuilder';
 import { AdminSubmissions } from './pages/AdminSubmissions';
 import { MyJournal } from './pages/MyJournal';
 
@@ -84,6 +85,13 @@ function MainApp() {
           />
         )}
 
+        {currentPage === 'admin-workbook-builder' && (
+          <AdminWorkbookBuilder
+            onBack={() => setCurrentPage('dashboard')}
+            onCreated={() => setCurrentPage('dashboard')}
+          />
+        )}
+
         {currentPage === 'admin-submissions' && (
           <AdminSubmissions onBack={() => setCurrentPage('dashboard')} />
         )}
@@ -95,10 +103,23 @@ function MainApp() {
                 Fellowship Leader / Admin Panel
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '1.25rem' }}>
-                Manage custom questionnaires and inspect fellowship member submissions.
+                Create workbooks, manage custom questionnaires, and inspect fellowship member submissions.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                <div
+                  className="card card-interactive"
+                  onClick={() => setCurrentPage('admin-workbook-builder')}
+                  style={{ borderLeft: '4px solid var(--accent-emerald)' }}
+                >
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    + Create Workbook
+                  </h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
+                    Author new interactive study manuals, prayer guides, and digital workbooks.
+                  </p>
+                </div>
+
                 <div
                   className="card card-interactive"
                   onClick={() => setCurrentPage('admin-builder')}

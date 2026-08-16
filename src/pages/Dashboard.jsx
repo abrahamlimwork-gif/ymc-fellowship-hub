@@ -3,11 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useWorkbook } from '../context/WorkbookContext';
 import { PWAInstallBanner } from '../components/PWAInstallBanner';
 import { BookCoverCard } from '../components/BookCoverCard';
-import { BookOpen, CheckSquare, Sparkles, ArrowRight, ShieldCheck, Heart, User, CheckCircle2, FileText, Share2 } from 'lucide-react';
+import { BookOpen, CheckSquare, Sparkles, ArrowRight, ShieldCheck, Heart, User, CheckCircle2, FileText, Plus, Layers } from 'lucide-react';
 
 export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
   const { currentUser, isAdmin } = useAuth();
-  const { workbooks, questionnaires, getWorkbookProgress, getUserSubmissions } = useWorkbook();
+  const { workbooks, questionnaires, getWorkbookProgress, getUserSubmissions, deleteWorkbook } = useWorkbook();
 
   const userSubs = getUserSubmissions(currentUser?.id);
 
@@ -40,7 +40,7 @@ export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               className="btn btn-outline btn-sm"
               onClick={() => onNavigate('journal')}
@@ -48,39 +48,51 @@ export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
               <FileText size={14} /> My Notes
             </button>
             {isAdmin && (
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => onNavigate('admin-builder')}
-              >
-                <ShieldCheck size={14} /> + New Task
-              </button>
+              <>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => onNavigate('admin-workbook-builder')}
+                >
+                  <Plus size={14} /> + New Workbook
+                </button>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => onNavigate('admin-builder')}
+                >
+                  <ShieldCheck size={14} /> + New Task
+                </button>
+              </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Section: Assigned Fellowship Tasks */}
-      <div style={{ marginBottom: '2.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem' }}>
+      {/* Section: Priority Fellowship Questionnaires & Tasks */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <CheckSquare size={18} color="var(--primary)" /> Active Fellowship Questionnaires
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CheckSquare size={20} color="var(--primary)" /> Assigned Tasks & Surveys
             </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
-              Tasks created by leaders for group discussion & alignment
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
+              Custom questionnaires assigned by leaders for your weekly check-ins
             </p>
           </div>
+
           <button
             className="btn btn-outline btn-sm"
             onClick={() => onNavigate('tasks')}
+            style={{ fontSize: '0.8rem' }}
           >
-            View All ({questionnaires.length})
+            View All ({questionnaires.length}) <ArrowRight size={13} />
           </button>
         </div>
 
+        {/* Task Cards Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
           {questionnaires.slice(0, 2).map((task) => {
-            const isSubmitted = userSubs.some(s => s.taskId === task.id);
+            const isSubmitted = userSubs.some((s) => s.taskId === task.id);
+
             return (
               <div
                 key={task.id}
@@ -90,26 +102,27 @@ export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
                   borderLeft: isSubmitted ? '4px solid var(--accent-emerald)' : '4px solid var(--primary)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  padding: '1.25rem'
                 }}
               >
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 7px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-full)', color: 'var(--text-secondary)' }}>
-                      {task.category || 'Fellowship'}
+                      {task.category || 'Fellowship Task'}
                     </span>
                     {isSubmitted ? (
-                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-emerald)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                        <CheckCircle2 size={13} /> Submitted
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-emerald)', background: 'var(--accent-emerald-light)', padding: '2px 7px', borderRadius: 'var(--radius-full)' }}>
+                        <CheckCircle2 size={12} /> Completed
                       </span>
                     ) : (
-                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-gold)', fontWeight: 700 }}>
-                        Due: {task.dueDate || 'Open'}
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                        Pending
                       </span>
                     )}
                   </div>
 
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, marginBottom: '0.35rem', lineHeight: 1.35 }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.35rem' }}>
                     {task.title}
                   </h4>
                   <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -133,13 +146,25 @@ export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
 
       {/* Section: Digital Workbooks Library (3D Book Card Grid) */}
       <div>
-        <div style={{ marginBottom: '1.1rem' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <BookOpen size={20} color="var(--accent-gold)" /> Interactive Workbooks Library
-          </h3>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
-            Official digitized TWNAF and Young Married Couple materials with interactive write-in lines
-          </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <BookOpen size={20} color="var(--accent-gold)" /> Interactive Workbooks Library
+            </h3>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
+              Official digitized TWNAF and Young Married Couple materials with interactive write-in lines
+            </p>
+          </div>
+
+          {isAdmin && (
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => onNavigate('admin-workbook-builder')}
+              style={{ gap: '4px' }}
+            >
+              <Plus size={14} /> Create Workbook
+            </button>
+          )}
         </div>
 
         {/* 3D Book Cards Grid */}
@@ -152,6 +177,7 @@ export function Dashboard({ onSelectWorkbook, onSelectTask, onNavigate }) {
                 workbook={wb}
                 progress={progress}
                 onOpen={() => onSelectWorkbook(wb.id, 1)}
+                onDelete={deleteWorkbook}
               />
             );
           })}

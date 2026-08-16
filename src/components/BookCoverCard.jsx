@@ -1,7 +1,17 @@
 import React from 'react';
-import { BookOpen, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, ArrowRight, Sparkles, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export function BookCoverCard({ workbook, progress, onOpen }) {
+export function BookCoverCard({ workbook, progress, onOpen, onDelete }) {
+  const { isAdmin } = useAuth();
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete workbook "${workbook.title}" from the library?`)) {
+      if (onDelete) onDelete(workbook.id);
+    }
+  };
+
   return (
     <div
       className="card card-interactive book-shelf-card"
@@ -17,7 +27,8 @@ export function BookCoverCard({ workbook, progress, onOpen }) {
         border: '1px solid var(--border-color)',
         boxShadow: 'var(--shadow-sm)',
         transition: 'all 0.2s ease',
-        height: '100%'
+        height: '100%',
+        position: 'relative'
       }}
     >
       <div>
@@ -58,13 +69,15 @@ export function BookCoverCard({ workbook, progress, onOpen }) {
               />
             </div>
           ) : (
-            /* Custom YMC Covenant Track Cover */
+            /* Custom Covenant / Custom Track Cover */
             <div
               style={{
                 width: '145px',
                 height: '205px',
                 borderRadius: '6px',
-                background: 'linear-gradient(135deg, #059669, #047857)',
+                background: workbook.coverColor
+                  ? `linear-gradient(135deg, ${workbook.coverColor}, #0f172a)`
+                  : 'linear-gradient(135deg, #059669, #047857)',
                 color: '#ffffff',
                 display: 'flex',
                 flexDirection: 'column',
@@ -75,38 +88,55 @@ export function BookCoverCard({ workbook, progress, onOpen }) {
               }}
             >
               <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.85 }}>
-                YMC Fellowship
+                {workbook.badge || 'Workbook'}
               </span>
               <div>
                 <Sparkles size={26} style={{ margin: '0 auto 6px', color: '#fbbf24' }} />
                 <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block', lineHeight: 1.25 }}>
-                  Young Married Couples
+                  {workbook.title}
                 </span>
               </div>
               <span style={{ fontSize: '0.65rem', opacity: 0.85 }}>
-                6-Week Track
+                {workbook.totalPages || 1} Pages
               </span>
             </div>
           )}
 
-          {/* Category Badge */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              padding: '2px 8px',
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--border-color)',
-              boxShadow: 'var(--shadow-xs)'
-            }}
-          >
-            {workbook.badge}
-          </span>
+          {/* Category Badge & Admin Delete Button */}
+          <div style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                padding: '2px 8px',
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--border-color)',
+                boxShadow: 'var(--shadow-xs)'
+              }}
+            >
+              {workbook.badge}
+            </span>
+
+            {isAdmin && (
+              <button
+                type="button"
+                className="btn-icon btn-sm"
+                onClick={handleDelete}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  color: 'var(--accent-ruby)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  padding: '4px',
+                  borderRadius: 'var(--radius-full)'
+                }}
+                title="Delete Workbook (Admin)"
+              >
+                <Trash2 size={13} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Title & Subtitle */}
@@ -121,7 +151,7 @@ export function BookCoverCard({ workbook, progress, onOpen }) {
         <div style={{ marginBottom: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.78rem' }}>
             <span style={{ color: 'var(--text-muted)' }}>
-              {workbook.totalPages} Pages (Full Verbatim)
+              {workbook.totalPages} Pages {workbook.pdfUrl ? '(Full Verbatim)' : '(Interactive Digital)'}
             </span>
             <span style={{ fontWeight: 800, color: progress?.percent > 0 ? 'var(--accent-emerald)' : 'var(--text-muted)' }}>
               {progress?.percent || 0}% Filled

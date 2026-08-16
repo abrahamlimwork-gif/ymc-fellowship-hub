@@ -68,7 +68,7 @@ const VERBATIM_WORKBOOKS = [
 
 export function WorkbookProvider({ children }) {
   const { currentUser } = useAuth();
-  const [workbooks] = useState(VERBATIM_WORKBOOKS);
+  const [workbooks, setWorkbooks] = useState(() => StorageService.getAllWorkbooks(VERBATIM_WORKBOOKS));
   const [userAnswers, setUserAnswers] = useState({});
   const [annotations, setAnnotations] = useState({});
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved' | 'saving'
@@ -76,6 +76,17 @@ export function WorkbookProvider({ children }) {
   const [submissions, setSubmissions] = useState(() => StorageService.getAllSubmissions());
 
   const saveTimeoutRef = useRef(null);
+
+  const createWorkbook = (wbData) => {
+    const newWb = StorageService.saveCustomWorkbook(wbData);
+    setWorkbooks(StorageService.getAllWorkbooks(VERBATIM_WORKBOOKS));
+    return newWb;
+  };
+
+  const deleteWorkbook = (wbId) => {
+    StorageService.deleteWorkbook(wbId);
+    setWorkbooks(StorageService.getAllWorkbooks(VERBATIM_WORKBOOKS));
+  };
 
   useEffect(() => {
     if (currentUser?.id) {
@@ -233,6 +244,8 @@ export function WorkbookProvider({ children }) {
         questionnaires,
         createQuestionnaire,
         deleteQuestionnaire,
+        createWorkbook,
+        deleteWorkbook,
         submitTask,
         submissions,
         deleteSubmission,
