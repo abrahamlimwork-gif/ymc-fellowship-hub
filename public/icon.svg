@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle inner border -->
+  <rect x="16" y="16" width="480" height="480" rx="94" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+
+  <!-- Open Book & Cross / Unity Rings Symbol -->
+  <g transform="translate(256, 230)">
+    <!-- Book Pages -->
+    <path d="M-130 90 C -60 70, -20 85, 0 100 C 20 85, 60 70, 130 90 L 125 10 C 65 -10, 20 0, 0 18 C -20 0, -65 -10, -125 10 Z" fill="url(#tealGrad)" opacity="0.95"/>
+    <path d="M-130 100 C -60 80, -20 95, 0 110 C 20 95, 60 80, 130 100 L 130 90 C 60 70, 20 85, 0 100 C -20 85, -60 70, -130 90 Z" fill="#0369a1"/>
+    
+    <!-- Central Cross / Olive Branch -->
+    <rect x="-10" y="-120" width="20" height="110" rx="6" fill="url(#goldGrad)"/>
+    <rect x="-45" y="-90" width="90" height="20" rx="6" fill="url(#goldGrad)"/>
+
+    <!-- Dual Wedding Rings intertwining -->
+    <circle cx="-35" cy="-20" r="32" fill="none" stroke="url(#goldGrad)" stroke-width="10"/>
+    <circle cx="35" cy="-20" r="32" fill="none" stroke="url(#goldGrad)" stroke-width="10"/>
+  </g>
+
+  <!-- Typography: YMC HUB -->
+  <text x="256" y="420" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="44" fill="#ffffff" letter-spacing="4">YMC FELLOWSHIP</text>
+  <text x="256" y="455" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="20" fill="#94a3b8" letter-spacing="6">DIGITAL WORKBOOKS</text>
+</svg>
