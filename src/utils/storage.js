@@ -1,4 +1,5 @@
 import { defaultQuestionnaires } from '../data/defaultQuestionnaires';
+import { FirebaseService } from './firebase';
 
 const STORAGE_KEYS = {
   USERS: 'ymc_hub_users_v1',
@@ -124,6 +125,7 @@ export const StorageService = {
     };
 
     localStorage.setItem(STORAGE_KEYS.ANSWERS, JSON.stringify(all));
+    FirebaseService.syncAnswer(userId, workbookId, fieldId, value);
     return all[userId];
   },
 
@@ -192,16 +194,18 @@ export const StorageService = {
   saveQuestionnaire(newQuestionnaire) {
     const list = this.getQuestionnaires();
     const existingIndex = list.findIndex(q => q.id === newQuestionnaire.id);
+    const item = {
+      id: newQuestionnaire.id || 'quest-' + Date.now(),
+      createdAt: new Date().toISOString(),
+      ...newQuestionnaire
+    };
     if (existingIndex >= 0) {
-      list[existingIndex] = newQuestionnaire;
+      list[existingIndex] = item;
     } else {
-      list.unshift({
-        id: 'quest-' + Date.now(),
-        createdAt: new Date().toISOString(),
-        ...newQuestionnaire
-      });
+      list.unshift(item);
     }
     localStorage.setItem(STORAGE_KEYS.QUESTIONNAIRES, JSON.stringify(list));
+    FirebaseService.syncQuestionnaire(item);
     return list;
   },
 
@@ -209,6 +213,7 @@ export const StorageService = {
     let list = this.getQuestionnaires();
     list = list.filter(q => q.id !== id);
     localStorage.setItem(STORAGE_KEYS.QUESTIONNAIRES, JSON.stringify(list));
+    FirebaseService.deleteQuestionnaire(id);
     return list;
   },
 
@@ -243,6 +248,7 @@ export const StorageService = {
     }
 
     localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(subs));
+    FirebaseService.syncSubmission(submissionRecord);
     return submissionRecord;
   },
 
@@ -250,6 +256,7 @@ export const StorageService = {
     let subs = this.getAllSubmissions();
     subs = subs.filter(s => s.id !== id);
     localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(subs));
+    FirebaseService.deleteSubmission(id);
     return subs;
   },
 
@@ -295,6 +302,7 @@ export const StorageService = {
     }
 
     localStorage.setItem('ymc_hub_custom_workbooks_v1', JSON.stringify(list));
+    FirebaseService.syncWorkbook(newWb);
     return newWb;
   },
 
@@ -313,6 +321,7 @@ export const StorageService = {
         localStorage.setItem('ymc_hub_deleted_workbooks_v1', JSON.stringify(deletedIds));
       }
     }
+    FirebaseService.deleteWorkbook(wbId);
   },
 
   // Theme
