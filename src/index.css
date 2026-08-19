@@ -545,6 +545,33 @@ input, textarea, select {
   min-height: 80px;
 }
 
+/* Option E UI Styles */
+.subtle-task-pill:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.hero-spotlight-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-spotlight-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.library-grid-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.filter-pills-row::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-btn:hover {
+  border-color: var(--primary);
+}
+
 /* Print Styles */
 @media print {
   body {

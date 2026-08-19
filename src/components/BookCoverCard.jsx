@@ -1,9 +1,10 @@
 import React from 'react';
-import { BookOpen, ArrowRight, Sparkles, Trash2 } from 'lucide-react';
+import { BookOpen, ArrowRight, Sparkles, Trash2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export function BookCoverCard({ workbook, progress, onOpen, onDelete }) {
   const { isAdmin } = useAuth();
+  const isCompleted = progress?.percent === 100;
 
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -14,67 +15,67 @@ export function BookCoverCard({ workbook, progress, onOpen, onDelete }) {
 
   return (
     <div
-      className="card card-interactive book-shelf-card"
+      className="card card-interactive library-grid-card"
       onClick={onOpen}
       style={{
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '1.25rem',
+        padding: '0.85rem',
         borderRadius: '12px',
         cursor: 'pointer',
         background: 'var(--bg-card)',
         border: '1px solid var(--border-color)',
         boxShadow: 'var(--shadow-sm)',
         transition: 'all 0.2s ease',
-        height: '100%',
-        position: 'relative'
+        position: 'relative',
+        height: '100%'
       }}
     >
       <div>
-        {/* Simple & Clean Cover Preview Container */}
+        {/* Book Cover Container */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            marginBottom: '1rem',
-            padding: '0.75rem',
+            marginBottom: '0.65rem',
+            padding: '0.6rem 0.25rem',
             background: 'var(--bg-subtle)',
             borderRadius: '8px',
             position: 'relative',
-            minHeight: '200px'
+            minHeight: '150px'
           }}
         >
           {workbook.coverImage ? (
             <div
               style={{
-                boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
-                borderRadius: '6px',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.25)',
+                borderRadius: '5px',
                 overflow: 'hidden',
                 background: '#ffffff',
                 display: 'inline-flex',
-                maxHeight: '210px'
+                maxHeight: '155px'
               }}
             >
               <img
                 src={workbook.coverImage}
                 alt={workbook.title}
                 style={{
-                  width: '145px',
-                  height: '205px',
+                  width: '105px',
+                  height: '150px',
                   objectFit: 'cover',
                   display: 'block'
                 }}
               />
             </div>
           ) : (
-            /* Custom Covenant / Custom Track Cover */
+            /* Custom Dynamic Workbook Cover */
             <div
               style={{
-                width: '145px',
-                height: '205px',
-                borderRadius: '6px',
+                width: '105px',
+                height: '150px',
+                borderRadius: '5px',
                 background: workbook.coverColor
                   ? `linear-gradient(135deg, ${workbook.coverColor}, #0f172a)`
                   : 'linear-gradient(135deg, #059669, #047857)',
@@ -82,42 +83,42 @@ export function BookCoverCard({ workbook, progress, onOpen, onDelete }) {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                padding: '1.25rem 0.75rem',
+                padding: '0.75rem 0.5rem',
                 textAlign: 'center',
-                boxShadow: '0 6px 18px rgba(0,0,0,0.3)'
+                boxShadow: '0 5px 15px rgba(0,0,0,0.25)'
               }}
             >
-              <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.85 }}>
-                {workbook.badge || 'Workbook'}
+              <span style={{ fontSize: '0.55rem', fontWeight: 800, letterSpacing: '0.4px', textTransform: 'uppercase', opacity: 0.85 }}>
+                {workbook.badge?.slice(0, 12) || 'Workbook'}
               </span>
               <div>
-                <Sparkles size={26} style={{ margin: '0 auto 6px', color: '#fbbf24' }} />
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block', lineHeight: 1.25 }}>
+                <Sparkles size={18} style={{ margin: '0 auto 3px', color: '#fbbf24' }} />
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, display: 'block', lineHeight: 1.15 }}>
                   {workbook.title}
                 </span>
               </div>
-              <span style={{ fontSize: '0.65rem', opacity: 0.85 }}>
-                {workbook.totalPages || 1} Pages
+              <span style={{ fontSize: '0.58rem', opacity: 0.85 }}>
+                {workbook.totalPages || 1} pgs
               </span>
             </div>
           )}
 
-          {/* Category Badge & Admin Delete Button */}
-          <div style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                padding: '2px 8px',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-xs)'
-              }}
-            >
-              {workbook.badge}
-            </span>
+          {/* Top-Right Completed or Admin Delete Badge */}
+          <div style={{ position: 'absolute', top: '6px', right: '6px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+            {isCompleted && (
+              <span
+                style={{
+                  background: 'var(--accent-emerald)',
+                  color: '#ffffff',
+                  borderRadius: 'var(--radius-full)',
+                  padding: '2px',
+                  display: 'inline-flex'
+                }}
+                title="Completed"
+              >
+                <CheckCircle2 size={12} />
+              </span>
+            )}
 
             {isAdmin && (
               <button
@@ -128,64 +129,63 @@ export function BookCoverCard({ workbook, progress, onOpen, onDelete }) {
                   background: 'rgba(239, 68, 68, 0.15)',
                   color: 'var(--accent-ruby)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
-                  padding: '4px',
+                  padding: '3px',
                   borderRadius: 'var(--radius-full)'
                 }}
                 title="Delete Workbook (Admin)"
               >
-                <Trash2 size={13} />
+                <Trash2 size={11} />
               </button>
             )}
           </div>
         </div>
 
-        {/* Title & Subtitle */}
-        <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '0.35rem', lineHeight: 1.35 }}>
+        {/* Title & Page Info */}
+        <h4
+          style={{
+            fontSize: '0.92rem',
+            fontWeight: 800,
+            marginBottom: '0.2rem',
+            lineHeight: 1.25,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            minHeight: '2.3rem'
+          }}
+        >
           {workbook.title}
         </h4>
-        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem', lineHeight: 1.45, minHeight: '38px' }}>
-          {workbook.subtitle}
-        </p>
 
-        {/* Progress */}
-        <div style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.78rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>
-              {workbook.totalPages} Pages {workbook.pdfUrl ? '(Full Verbatim)' : '(Interactive Digital)'}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+          <span>{workbook.totalPages} Pages</span>
+          {workbook.badge && (
+            <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>
+              {workbook.badge.split('/')[0].trim()}
             </span>
-            <span style={{ fontWeight: 800, color: progress?.percent > 0 ? 'var(--accent-emerald)' : 'var(--text-muted)' }}>
-              {progress?.percent || 0}% Filled
-            </span>
-          </div>
-
-          <div style={{ width: '100%', height: '6px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-            <div
-              style={{
-                width: `${progress?.percent || 0}%`,
-                height: '100%',
-                background: (progress?.percent || 0) > 0 ? 'var(--accent-emerald)' : 'var(--primary)',
-                transition: 'width 0.4s ease'
-              }}
-            />
-          </div>
-
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            {progress?.answeredFields || 0} of {progress?.totalFields || 0} interactive fields completed
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Button */}
+      {/* Action Button */}
       <button
         type="button"
-        className="btn btn-primary"
+        className="btn btn-primary btn-sm"
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
         }}
-        style={{ width: '100%', justifyContent: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 700 }}
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          gap: '4px',
+          fontSize: '0.82rem',
+          fontWeight: 700,
+          padding: '0.4rem 0.6rem',
+          borderRadius: '6px'
+        }}
       >
-        <BookOpen size={15} /> Open Workbook <ArrowRight size={14} />
+        Open <ArrowRight size={13} />
       </button>
     </div>
   );
