@@ -4,10 +4,11 @@ import { StorageService } from '../utils/storage';
 import mmFullData from '../data/master_mentor_full.json';
 import tmdFullData from '../data/tmd_mothers_full.json';
 import { ymcJointWorkbook } from '../data/ymcJointTrackData';
+import { ccf7SecretsWorkbook } from '../data/ccf7SecretsData';
 
 const WorkbookContext = createContext();
 
-// Format YMC Joint Track as blocks as well
+// Format YMC Joint Track as blocks
 const ymcPages = ymcJointWorkbook.chapters.map((ch, idx) => ({
   pageNum: idx + 1,
   sheetNum: idx + 1,
@@ -48,6 +49,47 @@ const ymcFullData = {
   pdfUrl: null
 };
 
+// Format CCF Across: 7 Secrets to an Awesome Marriage as blocks
+const ccf7SecretsPages = ccf7SecretsWorkbook.chapters.map((ch, idx) => ({
+  pageNum: idx + 1,
+  sheetNum: idx + 1,
+  printedPage: idx + 1,
+  displayLabel: `Secret ${ch.number}`,
+  title: ch.title,
+  chapter: `Secret ${ch.number}`,
+  rawText: `${ch.title}\n${ch.subtitle}\n"${ch.scripture.text}" — ${ch.scripture.ref}\n${ch.essence}`,
+  blocks: [
+    { type: 'chapter_header', text: ch.title },
+    { type: 'paragraph', text: ch.subtitle },
+    { type: 'paragraph', text: `"${ch.scripture.text}" — ${ch.scripture.ref}` },
+    { type: 'activity_badge', text: `BIBLICAL PRINCIPLE: ${ch.essence}` },
+    ...ch.sections.map((sec) => {
+      if (sec.type === 'text') {
+        return { type: 'paragraph', text: `${sec.heading ? sec.heading + '\n' : ''}${sec.body}` };
+      }
+      return {
+        type: 'question_box',
+        id: sec.id,
+        label: `${sec.label} (${sec.tag}): ${sec.prompt}`,
+        placeholder: 'Type your answer or couple reflection here...',
+        linesCount: 3
+      };
+    })
+  ]
+}));
+
+const ccf7SecretsFullData = {
+  id: 'ccf-7-secrets',
+  title: ccf7SecretsWorkbook.title,
+  subtitle: ccf7SecretsWorkbook.subtitle,
+  totalPages: ccf7SecretsPages.length,
+  pages: ccf7SecretsPages,
+  badge: 'Couples / CCF Across',
+  coverColor: '#b45309',
+  coverImage: null,
+  pdfUrl: null
+};
+
 const VERBATIM_WORKBOOKS = [
   {
     ...mmFullData,
@@ -63,7 +105,8 @@ const VERBATIM_WORKBOOKS = [
     coverImage: './covers/tmd_mothers.jpg?v=2',
     pdfUrl: './pdfs/tmd_mothers.pdf'
   },
-  ymcFullData
+  ymcFullData,
+  ccf7SecretsFullData
 ];
 
 export function WorkbookProvider({ children }) {
